@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: stg_medication_administration
+    description: One row per dose given (hospital eMAR and ICU inputs). 56,535 in the MIMIC demo.
+    columns:
+      - name: medication_administration_id
+        data_tests:
+          - unique
+          - not_null
+      - name: patient_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_patient')
+                field: patient_id
+      - name: encounter_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_encounter')
+                field: encounter_id
+      - name: medication_request_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_medication_request')
+                field: medication_request_id
+      - name: start_datetime
+        data_tests:
+          - not_null

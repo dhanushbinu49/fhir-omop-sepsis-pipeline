@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_medication_ingredient
+    description: One row per ingredient of a drug mix (an item of Medication.ingredient). Key is medication_id + position.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [medication_id, position]
+    columns:
+      - name: medication_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_medication')
+                field: medication_id
+      - name: ingredient_medication_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_medication')
+                field: medication_id

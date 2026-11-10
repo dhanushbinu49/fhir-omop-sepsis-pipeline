@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: stg_condition
+    description: One row per diagnosis (ICD-9 or ICD-10). 5,051 in the MIMIC demo.
+    columns:
+      - name: condition_id
+        data_tests:
+          - unique
+          - not_null
+      - name: patient_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_patient')
+                field: patient_id
+      - name: encounter_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_encounter')
+                field: encounter_id
+      - name: code
+        data_tests:
+          - not_null

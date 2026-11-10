@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: stg_organization
+    description: One row per organization (1 in the MIMIC demo, the hospital itself).
+    columns:
+      - name: organization_id
+        data_tests:
+          - unique
+          - not_null
+      - name: organization_name
+        data_tests:
+          - not_null

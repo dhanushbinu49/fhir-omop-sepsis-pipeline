@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: stg_medication
+    description: One row per drug or drug mix. 1,794 in the MIMIC demo (1,480 drugs + 314 mixes).
+    columns:
+      - name: medication_id
+        data_tests:
+          - unique
+          - not_null
+      - name: is_mix
+        data_tests:
+          - not_null

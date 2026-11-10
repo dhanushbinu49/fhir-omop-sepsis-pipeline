@@ -5,3 +5,4 @@ __pycache__/
 HealthDataInsights/
 research_notes/
 reports/
+*.swp

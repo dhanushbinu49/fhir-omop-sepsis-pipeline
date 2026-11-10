@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_encounter_location
+    description: One row per ward stay inside an encounter (an item of Encounter.location). Key is encounter_id + position.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [encounter_id, position]
+    columns:
+      - name: encounter_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_encounter')
+                field: encounter_id
+      - name: location_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_location')
+                field: location_id

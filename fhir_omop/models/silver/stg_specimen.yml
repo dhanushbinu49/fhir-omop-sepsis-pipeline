@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: stg_specimen
+    description: One row per specimen (lab and microbiology samples). 12,458 in the MIMIC demo.
+    columns:
+      - name: specimen_id
+        data_tests:
+          - unique
+          - not_null
+      - name: patient_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_patient')
+                field: patient_id

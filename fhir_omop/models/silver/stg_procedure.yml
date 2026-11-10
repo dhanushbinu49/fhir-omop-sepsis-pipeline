@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: stg_procedure
+    description: One row per procedure (hospital ICD, ED and ICU procedures). 3,450 in the MIMIC demo.
+    columns:
+      - name: procedure_id
+        data_tests:
+          - unique
+          - not_null
+      - name: patient_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_patient')
+                field: patient_id
+      - name: encounter_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_encounter')
+                field: encounter_id
+      - name: start_datetime
+        data_tests:
+          - not_null

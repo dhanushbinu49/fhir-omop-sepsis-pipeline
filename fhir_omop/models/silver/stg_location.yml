@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: stg_location
+    description: One row per hospital ward (31 in the MIMIC demo).
+    columns:
+      - name: location_id
+        data_tests:
+          - unique
+          - not_null
+      - name: location_name
+        data_tests:
+          - not_null

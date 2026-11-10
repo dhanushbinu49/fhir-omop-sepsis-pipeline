@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: stg_observation
+    description: One row per observation (labs, vitals, chart events, microbiology). 813,540 in the MIMIC demo.
+    columns:
+      - name: observation_id
+        data_tests:
+          - unique
+          - not_null
+      - name: patient_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_patient')
+                field: patient_id
+      - name: encounter_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_encounter')
+                field: encounter_id
+      - name: specimen_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_specimen')
+                field: specimen_id
+      - name: parent_observation_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_observation')
+                field: observation_id
+      - name: effective_datetime
+        data_tests:
+          - not_null

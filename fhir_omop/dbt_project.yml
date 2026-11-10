@@ -1,0 +1,15 @@
+name: fhir_omop
+profile: fhir_omop
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  fhir_omop:
+    +static_analysis: strict     # dbt 2 checks your SQL types before running it
+    silver:
+      +materialized: table       # store results, so gold doesn't re-read bronze's JSON every time

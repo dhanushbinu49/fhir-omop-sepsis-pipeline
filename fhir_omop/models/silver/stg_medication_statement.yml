@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_medication_statement
+    description: One row per home medication reported in the ED. 2,411 in the MIMIC demo.
+    columns:
+      - name: medication_statement_id
+        data_tests:
+          - unique
+          - not_null
+      - name: patient_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_patient')
+                field: patient_id
+      - name: encounter_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_encounter')
+                field: encounter_id

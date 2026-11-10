@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: stg_encounter
+    description: One row per encounter (hospital stay, ED visit or ICU stay). 637 in the MIMIC demo.
+    columns:
+      - name: encounter_id
+        data_tests:
+          - unique
+          - not_null
+      - name: patient_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_patient')
+                field: patient_id
+      - name: encounter_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['hospital', 'ed', 'icu']
+      - name: start_datetime
+        data_tests:
+          - not_null
+      - name: parent_encounter_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_encounter')
+                field: encounter_id
