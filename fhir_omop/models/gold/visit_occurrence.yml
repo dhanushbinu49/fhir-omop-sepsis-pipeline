@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: visit_occurrence
+    description: OMOP CDM v5.4 VISIT_OCCURRENCE. One row per hospital stay (275) or ED visit (222), 497 in the MIMIC demo. visit_occurrence_id is MIMIC's hadm_id or ED stay_id.
+    data_tests:
+      - dbt_utils.expression_is_true:     # no visit ends before it starts
+          arguments:
+            expression: "visit_end_datetime >= visit_start_datetime"
+    columns:
+      - name: visit_occurrence_id
+        data_tests:
+          - unique
+          - not_null
+      - name: person_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: visit_concept_id
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [9201, 9203]        # Inpatient Visit, Emergency Room Visit
+                quote: false
+      - name: visit_start_date
+        data_tests:
+          - not_null
+      - name: visit_end_date
+        data_tests:
+          - not_null
+      - name: visit_type_concept_id
+        data_tests:
+          - not_null
+      - name: visit_source_value
+        data_tests:
+          - unique                  # visit_detail joins on it
+          - not_null
+      - name: preceding_visit_occurrence_id
+        data_tests:
+          - relationships:          # must point to a real visit (NULLs are skipped)
+              arguments:
+                to: ref('visit_occurrence')
+                field: visit_occurrence_id

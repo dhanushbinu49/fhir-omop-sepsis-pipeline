@@ -13,3 +13,6 @@ models:
     +static_analysis: strict     # dbt 2 checks your SQL types before running it
     silver:
       +materialized: table       # store results, so gold doesn't re-read bronze's JSON every time
+    gold:
+      +materialized: table
+      +schema: gold

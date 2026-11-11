@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: person
+    description: OMOP CDM v5.4 PERSON. One row per patient (100 in the MIMIC demo). person_id is MIMIC's subject_id.
+    columns:
+      - name: person_id
+        data_tests:
+          - unique
+          - not_null
+      - name: gender_concept_id
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [8507, 8532]        # MALE, FEMALE
+                quote: false                # numbers, not text
+      - name: year_of_birth
+        data_tests:
+          - not_null
+      - name: race_concept_id
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 8527, 8516, 8515, 8657, 8557]   # 0 = unknown, then the 5 OMB race groups
+                quote: false
+      - name: ethnicity_concept_id
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 38003563, 38003564]   # 0 = unknown, Hispanic, Not Hispanic
+                quote: false
+      - name: person_source_value
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_patient')
+                field: patient_id

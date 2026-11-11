@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: visit_detail
+    description: OMOP CDM v5.4 VISIT_DETAIL. One row per ICU stay (140 in the MIMIC demo), linked to its hospital stay. visit_detail_id is MIMIC's ICU stay_id.
+    data_tests:
+      - dbt_utils.expression_is_true:     # no ICU stay ends before it starts
+          arguments:
+            expression: "visit_detail_end_datetime >= visit_detail_start_datetime"
+    columns:
+      - name: visit_detail_id
+        data_tests:
+          - unique
+          - not_null
+      - name: person_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: visit_detail_concept_id
+        data_tests:
+          - not_null
+      - name: visit_detail_start_date
+        data_tests:
+          - not_null
+      - name: visit_detail_end_date
+        data_tests:
+          - not_null
+      - name: visit_detail_type_concept_id
+        data_tests:
+          - not_null
+      - name: visit_occurrence_id
+        data_tests:
+          - not_null                # every ICU stay belongs to a hospital stay
+          - relationships:
+              arguments:
+                to: ref('visit_occurrence')
+                field: visit_occurrence_id

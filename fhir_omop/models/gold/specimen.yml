@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: specimen
+    description: OMOP CDM v5.4 SPECIMEN. One row per sample with a collection time (12,413 in the MIMIC demo; the 45 with no time are left out). specimen_id is MIMIC's specimen id.
+    columns:
+      - name: specimen_id
+        data_tests:
+          - unique
+          - not_null
+      - name: person_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: specimen_concept_id
+        data_tests:
+          - not_null
+      - name: specimen_type_concept_id
+        data_tests:
+          - not_null
+      - name: specimen_date
+        data_tests:
+          - not_null
+      - name: specimen_source_id
+        data_tests:
+          - unique
+          - not_null

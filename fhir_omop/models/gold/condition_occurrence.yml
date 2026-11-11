@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: condition_occurrence
+    description: OMOP CDM v5.4 CONDITION_OCCURRENCE. One row per diagnosis and standard concept (4,404 in the MIMIC demo). ICD-9/ICD-10 codes are mapped to standard concepts through the vocab's 'Maps to'; codes that belong to another domain (e.g. Observation) are left out.
+    columns:
+      - name: condition_occurrence_id
+        data_tests:
+          - unique
+          - not_null
+      - name: person_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: condition_concept_id
+        data_tests:
+          - not_null
+          - dbt_utils.relationships_where:   # every mapped concept is a standard Condition concept (the OHDSI Data Quality Dashboard checks this too)
+              arguments:
+                to: source('vocab', 'concept')
+                field: concept_id
+                from_condition: "condition_concept_id <> 0"
+                to_condition: "domain_id = 'Condition' and standard_concept = 'S'"
+      - name: condition_start_date
+        data_tests:
+          - not_null
+      - name: condition_type_concept_id
+        data_tests:
+          - not_null
+      - name: visit_occurrence_id
+        data_tests:
+          - not_null                # every diagnosis belongs to a hospital stay or ED visit
+          - relationships:
+              arguments:
+                to: ref('visit_occurrence')
+                field: visit_occurrence_id
+      - name: condition_source_value
+        data_tests:
+          - not_null
+      - name: condition_source_concept_id
+        data_tests:
+          - not_null

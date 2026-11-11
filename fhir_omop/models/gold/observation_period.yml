@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: observation_period
+    description: OMOP CDM v5.4 OBSERVATION_PERIOD. One row per person (100 in the MIMIC demo), from their first record to their last (visits, ICU stays, specimens, death).
+    data_tests:
+      - dbt_utils.equal_rowcount:         # every person gets exactly one period
+          arguments:
+            compare_model: ref('person')
+      - dbt_utils.expression_is_true:     # no period ends before it starts
+          arguments:
+            expression: "observation_period_end_date >= observation_period_start_date"
+    columns:
+      - name: observation_period_id
+        data_tests:
+          - unique
+          - not_null
+      - name: person_id
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: observation_period_start_date
+        data_tests:
+          - not_null
+      - name: observation_period_end_date
+        data_tests:
+          - not_null
+      - name: period_type_concept_id
+        data_tests:
+          - not_null
