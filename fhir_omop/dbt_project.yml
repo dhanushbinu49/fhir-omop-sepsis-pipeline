@@ -16,3 +16,6 @@ models:
     gold:
       +materialized: table
       +schema: gold
+    marts:
+      +materialized: table       # the dashboard reads stored rows instead of rerunning the query
+      +schema: marts
