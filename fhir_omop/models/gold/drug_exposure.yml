@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: drug_exposure
+    description: OMOP CDM v5.4 DRUG_EXPOSURE. One row per dose given (eMAR and ICU chart, type 32818) or drug taken from the ED cabinet (Pyxis, type 32825), 53,445 in the MIMIC demo. Drug names are mapped to standard RxNorm ingredients; 0 means no match.
+    data_tests:
+      - dbt_utils.expression_is_true:     # no dose ends before it starts
+          arguments:
+            expression: "drug_exposure_end_datetime >= drug_exposure_start_datetime"
+    columns:
+      - name: drug_exposure_id
+        data_tests:
+          - unique
+          - not_null
+      - name: person_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: drug_concept_id
+        data_tests:
+          - not_null
+          - dbt_utils.relationships_where:   # every mapped concept is a standard Drug concept
+              arguments:
+                to: source('vocab', 'concept')
+                field: concept_id
+                from_condition: "drug_concept_id <> 0"
+                to_condition: "domain_id = 'Drug' and standard_concept = 'S'"
+      - name: drug_exposure_start_date
+        data_tests:
+          - not_null
+      - name: drug_exposure_start_datetime
+        data_tests:
+          - not_null
+      - name: drug_exposure_end_date
+        data_tests:
+          - not_null                # OMOP requires an end date
+      - name: drug_type_concept_id
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [32818, 32825]      # EHR administration record, EHR dispensing record
+                quote: false
+      - name: visit_occurrence_id
+        data_tests:
+          - relationships:          # no not_null: 939 eMAR rows have no visit
+              arguments:
+                to: ref('visit_occurrence')
+                field: visit_occurrence_id
+      - name: visit_detail_id
+        data_tests:
+          - relationships:          # filled for ICU rows only
+              arguments:
+                to: ref('visit_detail')
+                field: visit_detail_id
