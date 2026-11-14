@@ -1,4 +1,3 @@
--- Drugs handed out by the pharmacy (hospital) or in the ED.
 select
   json_value(resource, '$.id')                                               as medication_dispense_id,
   {{ reference_id('$.subject.reference') }}                                  as patient_id,

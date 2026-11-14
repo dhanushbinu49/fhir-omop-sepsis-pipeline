@@ -4,7 +4,7 @@ models:
   - name: ed_sepsis_timing
     description: One row per ED visit (222 in the MIMIC demo). Minutes from ED arrival to the first blood culture and the first antibiotic, within 24 hours and before the person's next ED visit. suspected_infection means both happened.
     data_tests:
-      - dbt_utils.expression_is_true:     # 1440 min = the 24 h window; NULL (no culture) passes
+      - dbt_utils.expression_is_true:
           arguments:
             expression: "minutes_to_culture between 0 and 1440"
       - dbt_utils.expression_is_true:

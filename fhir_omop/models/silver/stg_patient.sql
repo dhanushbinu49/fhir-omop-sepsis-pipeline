@@ -5,8 +5,7 @@ select
   cast(json_value(resource, '$.birthDate') as date)             as birth_date,
   cast(json_value(resource, '$.deceasedDateTime') as date)      as death_date,
 
-  -- Race and ethnicity live in a list of extensions whose order varies
-  -- (18 patients have no ethnicity), so find each one by its url
+  -- the extension order varies, so find each one by its url
   (
     select json_value(ext, '$.extension[0].valueCoding.code')
     from unnest(json_query_array(resource, '$.extension')) as ext

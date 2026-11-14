@@ -6,7 +6,7 @@ models:
     columns:
       - name: person_id
         data_tests:
-          - unique                  # a person can only die once
+          - unique
           - not_null
           - relationships:
               arguments:

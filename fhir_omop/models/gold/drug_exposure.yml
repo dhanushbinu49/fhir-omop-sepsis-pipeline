@@ -4,7 +4,7 @@ models:
   - name: drug_exposure
     description: OMOP CDM v5.4 DRUG_EXPOSURE. One row per dose given (eMAR and ICU chart, type 32818) or drug taken from the ED cabinet (Pyxis, type 32825), 53,445 in the MIMIC demo. Drug names are mapped to standard RxNorm ingredients; 0 means no match.
     data_tests:
-      - dbt_utils.expression_is_true:     # no dose ends before it starts
+      - dbt_utils.expression_is_true:
           arguments:
             expression: "drug_exposure_end_datetime >= drug_exposure_start_datetime"
     columns:
@@ -22,7 +22,7 @@ models:
       - name: drug_concept_id
         data_tests:
           - not_null
-          - dbt_utils.relationships_where:   # every mapped concept is a standard Drug concept
+          - dbt_utils.relationships_where:
               arguments:
                 to: source('vocab', 'concept')
                 field: concept_id
@@ -36,7 +36,7 @@ models:
           - not_null
       - name: drug_exposure_end_date
         data_tests:
-          - not_null                # OMOP requires an end date
+          - not_null
       - name: drug_type_concept_id
         data_tests:
           - not_null
@@ -46,13 +46,13 @@ models:
                 quote: false
       - name: visit_occurrence_id
         data_tests:
-          - relationships:          # no not_null: 939 eMAR rows have no visit
+          - relationships:          # no not_null: some eMAR rows have no visit
               arguments:
                 to: ref('visit_occurrence')
                 field: visit_occurrence_id
       - name: visit_detail_id
         data_tests:
-          - relationships:          # filled for ICU rows only
+          - relationships:
               arguments:
                 to: ref('visit_detail')
                 field: visit_detail_id

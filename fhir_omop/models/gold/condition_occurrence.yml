@@ -18,7 +18,7 @@ models:
       - name: condition_concept_id
         data_tests:
           - not_null
-          - dbt_utils.relationships_where:   # every mapped concept is a standard Condition concept (the OHDSI Data Quality Dashboard checks this too)
+          - dbt_utils.relationships_where:
               arguments:
                 to: source('vocab', 'concept')
                 field: concept_id
@@ -32,7 +32,7 @@ models:
           - not_null
       - name: visit_occurrence_id
         data_tests:
-          - not_null                # every diagnosis belongs to a hospital stay or ED visit
+          - not_null
           - relationships:
               arguments:
                 to: ref('visit_occurrence')

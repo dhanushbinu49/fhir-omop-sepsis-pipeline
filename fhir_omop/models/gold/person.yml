@@ -14,7 +14,7 @@ models:
           - accepted_values:
               arguments:
                 values: [8507, 8532]        # MALE, FEMALE
-                quote: false                # numbers, not text
+                quote: false
       - name: year_of_birth
         data_tests:
           - not_null

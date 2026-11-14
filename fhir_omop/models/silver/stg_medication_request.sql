@@ -1,5 +1,3 @@
--- Prescriptions / orders. Each request names its drug in one of two ways:
--- a link to a Medication (medication_id) or a code written inline (medication_code).
 select
   json_value(resource, '$.id')                                               as medication_request_id,
   {{ reference_id('$.subject.reference') }}                                  as patient_id,

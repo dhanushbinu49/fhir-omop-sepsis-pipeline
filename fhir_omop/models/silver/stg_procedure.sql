@@ -6,13 +6,12 @@ select
   json_value(resource, '$.code.coding[0].code')           as code,
   json_value(resource, '$.code.coding[0].display')        as code_display,
   json_value(resource, '$.status')                        as status,
-  -- A procedure has either one time (performedDateTime) or a start and end (performedPeriod)
   coalesce(
     {{ fhir_datetime('$.performedDateTime') }},
     {{ fhir_datetime('$.performedPeriod.start') }}
   )                                                       as start_datetime,
   {{ fhir_datetime('$.performedPeriod.end') }}            as end_datetime,
-  json_value(resource, '$.category.coding[0].code')       as category,  -- one object here, not a list
+  json_value(resource, '$.category.coding[0].code')       as category,
   json_value(resource, '$.bodySite[0].coding[0].code')    as body_site,
   source_file
 from {{ source('bronze', 'fhir_resources') }}

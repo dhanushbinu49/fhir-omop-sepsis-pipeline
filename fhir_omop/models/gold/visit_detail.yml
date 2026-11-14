@@ -4,7 +4,7 @@ models:
   - name: visit_detail
     description: OMOP CDM v5.4 VISIT_DETAIL. One row per ICU stay (140 in the MIMIC demo), linked to its hospital stay. visit_detail_id is MIMIC's ICU stay_id.
     data_tests:
-      - dbt_utils.expression_is_true:     # no ICU stay ends before it starts
+      - dbt_utils.expression_is_true:
           arguments:
             expression: "visit_detail_end_datetime >= visit_detail_start_datetime"
     columns:
@@ -33,7 +33,7 @@ models:
           - not_null
       - name: visit_occurrence_id
         data_tests:
-          - not_null                # every ICU stay belongs to a hospital stay
+          - not_null
           - relationships:
               arguments:
                 to: ref('visit_occurrence')

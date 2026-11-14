@@ -1,7 +1,4 @@
--- Drugs and drug mixes (e.g. an antibiotic in a saline bag).
--- Mixes are included because 2,843 medication requests point at a mix.
--- The identifier list order varies (identifier[0] is the NDC for most drugs,
--- but the formulary code or the name for others), so find each one by its system.
+-- the identifier order varies, so find each one by its system
 select
   json_value(resource, '$.id')                                  as medication_id,
   source_file = 'MimicMedicationMix.ndjson.gz'                  as is_mix,

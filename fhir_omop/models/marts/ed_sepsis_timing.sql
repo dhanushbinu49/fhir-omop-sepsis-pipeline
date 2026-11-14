@@ -1,7 +1,3 @@
--- Sepsis timing per ED visit: how fast the ED took a blood culture and gave an antibiotic.
--- Window: from arrival to 24 h later, ending early at the person's next ED arrival.
-
--- Step 1: ED visits (concept 9203), with arrival_datetime and next_arrival_datetime (lead). 222 rows.
 with ed_visits as (
 	select
 		visit_occurrence_id,
@@ -12,7 +8,7 @@ with ed_visits as (
 	where visit_concept_id = 9203
 ),
 
--- Step 2: concept_ancestor rows under ATC J01 (21602796), the antibiotic class. 6,301 rows.
+-- 21602796 is ATC J01, the antibiotic class
 antibiotic_concepts as (
 	select
 		descendant_concept_id
@@ -20,7 +16,6 @@ antibiotic_concepts as (
 	where ancestor_concept_id = 21602796
 ),
 
--- Step 3: antibiotic drug_exposure rows, minus eye drops, oral vancomycin and neomycin. 2,425 rows.
 antibiotic_doses as (
 	select
 		d.person_id,
@@ -34,7 +29,6 @@ antibiotic_doses as (
 		and lower(d.drug_source_value) not like 'neomycin%'
 ),
 
--- Step 4: specimens labelled exactly 'BLOOD CULTURE'. 488 rows.
 blood_cultures as (
 	select
 		person_id,
@@ -43,23 +37,21 @@ blood_cultures as (
 	where specimen_source_value = 'BLOOD CULTURE'
 ),
 
--- Step 5: first_culture_datetime per visit, inside the window. 93 rows.
 first_culture as (
 	select
 		v.visit_occurrence_id,
 		min(c.specimen_datetime) as first_culture_datetime
 	from ed_visits as v
-	-- by person and time: specimens have no visit, and eMAR doses point at the hospital stay
+	-- specimens have no visit and eMAR doses point at the hospital stay
 	join blood_cultures as c
 		on c.person_id = v.person_id
 		and c.specimen_datetime >= v.arrival_datetime
 		and c.specimen_datetime <= datetime_add(v.arrival_datetime, interval 24 hour)
-		-- keep the parentheses, or the "or" overrides the conditions above
+		-- stop at the next arrival: one ED stay can be split into two visits
 		and (v.next_arrival_datetime is null or c.specimen_datetime < v.next_arrival_datetime)
 	group by v.visit_occurrence_id
 ),
 
--- Step 6: first_antibiotic_datetime per visit, inside the window. 83 rows.
 first_antibiotic as (
 	select
 		v.visit_occurrence_id,
@@ -73,7 +65,6 @@ first_antibiotic as (
 	group by v.visit_occurrence_id
 ),
 
--- Step 7: every ED visit left joined to steps 5 and 6, plus minutes_to_culture and minutes_to_antibiotic. 222 rows.
 timed as (
 	select
 		v.visit_occurrence_id,
@@ -90,7 +81,6 @@ timed as (
 		on fa.visit_occurrence_id = v.visit_occurrence_id
 )
 
--- Step 8: the 4 flags, in their own step because BigQuery can't reuse a column alias in the same select.
 select
 	*,
 	first_culture_datetime is not null and first_antibiotic_datetime is not null as suspected_infection,

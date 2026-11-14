@@ -1,5 +1,3 @@
--- One row per ward a patient stayed in during a hospital stay.
--- $.location is a list, so unnest turns each item (called loc) into its own row.
 select
   json_value(e.resource, '$.id')                        as encounter_id,
   pos                                                   as position,

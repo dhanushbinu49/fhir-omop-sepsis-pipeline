@@ -1,7 +1,3 @@
--- OMOP SPECIMEN: one row per sample taken (blood, urine, ...). 12,413 in the MIMIC demo.
--- Comes from both FHIR files: MimicSpecimen (microbiology) and MimicSpecimenLab (lab tests).
--- specimen_id is MIMIC's own specimen id (no repeats across the two files).
--- OMOP needs a date, so the 45 specimens with no collection time are left out.
 select
   s.mimic_id                                        as specimen_id,
   p.person_id,
@@ -13,8 +9,8 @@ select
   0                                                 as unit_concept_id,
   0                                                 as anatomic_site_concept_id,
   0                                                 as disease_status_concept_id,
-  s.specimen_id                                     as specimen_source_id,          -- FHIR Specimen id, to trace back to silver
-  coalesce(s.specimen_type, s.specimen_type_code)   as specimen_source_value,       -- 'BLOOD CULTURE' (micro) or 'Blood' (lab)
+  s.specimen_id                                     as specimen_source_id,
+  coalesce(s.specimen_type, s.specimen_type_code)   as specimen_source_value,
   cast(null as string)                              as unit_source_value,
   cast(null as string)                              as anatomic_site_source_value,
   cast(null as string)                              as disease_status_source_value

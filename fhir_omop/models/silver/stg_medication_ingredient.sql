@@ -1,5 +1,3 @@
--- One row per ingredient of a drug mix. $.ingredient is a list,
--- so unnest turns each item (called ing) into its own row.
 select
   json_value(m.resource, '$.id')                                as medication_id,
   pos                                                           as position,
